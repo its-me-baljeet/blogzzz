@@ -20,7 +20,7 @@ export default async function Home() {
   const blogs= resp.blogs;
   return (
     <main className="h-[calc(100vh-56px)] p-5">
-      <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <section className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
       {
         blogs.map(blog => {
           return <BlogCard key={blog.id} blog={blog}/>

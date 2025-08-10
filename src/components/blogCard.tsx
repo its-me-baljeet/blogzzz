@@ -32,7 +32,7 @@ export default function BlogCard({ blog }: {
     }
   }
   return (
-    <Card key={blog.id}>
+    <Card key={blog.id} className="p-0 overflow-hidden">
       <CardHeader className="relative h-48 w-full">
         <Image src={blog.imageUrl || "https://thumb.ac-illust.com/b1/b170870007dfa419295d949814474ab2_t.jpeg"} fill alt="image" priority></Image>
       </CardHeader>
@@ -40,7 +40,7 @@ export default function BlogCard({ blog }: {
         <p className="text-lg font-medium">{blog.title}</p>
         <p className="text-sm font-medium text-muted-foreground">{blog.content}</p>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="mb-5 self-end flex gap-5">
         <Trash2 onClick={handleDelete} />
         <EditDialog blog={blog} />
       </CardFooter>

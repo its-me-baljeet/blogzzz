@@ -1,47 +1,52 @@
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuCheckboxItemProps, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import React from "react"
-import { Button } from "../ui/button"
+'use client'
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { UserContext } from "@/context/userContext"
+import { MenuIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useContext } from "react"
 
-"use client"
+export function HeaderDropdown() {
+  const context = useContext(UserContext);
+  const user = context?.user;
+  const router = useRouter();
 
-
-
-
-type Checked = DropdownMenuCheckboxItemProps["checked"]
-
-export function DropdownMenuCheckboxes() {
-    const [showStatusBar, setShowStatusBar] = React.useState<Checked>(true)
-    const [showActivityBar, setShowActivityBar] = React.useState<Checked>(false)
-    const [showPanel, setShowPanel] = React.useState<Checked>(false)
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline">Open</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem
-                    checked={showStatusBar}
-                    onCheckedChange={setShowStatusBar}
-                >
-                    Status Bar
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                    checked={showActivityBar}
-                    onCheckedChange={setShowActivityBar}
-                    disabled
-                >
-                    Activity Bar
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                    checked={showPanel}
-                    onCheckedChange={setShowPanel}
-                >
-                    Panel
-                </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
+  async function handleLogout(){
+    
+  }
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline"><MenuIcon/></Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="start">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            {
+              user? 
+              <p onClick={()=>router.push("/my-blogs")}>My Blogs</p>
+              :
+              <p onClick={()=>router.push("/login")}>Login</p>
+          }
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            {
+              user&&
+              <p onClick={()=>handleLogout()}>Logout</p>
+          }
+          </DropdownMenuItem>
+          
+        </DropdownMenuGroup>
+        
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }

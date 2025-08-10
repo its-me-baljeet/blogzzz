@@ -1,3 +1,5 @@
+import { getUserFromCookies } from "@/helper";
+import { createToken } from "@/services/jwt";
 import db from "@/services/prisma";
 import { cookies } from "next/headers";
 
@@ -30,13 +32,40 @@ export async function loginUser (x: any, args: {
                 email
             }
         });
+        if(!user)return false;
+        const token = createToken(user.id);
         if(user?.password==password){
-            cookieStore.set("token", user.id);
+            cookieStore.set("token", token);
             return true;
         }
         return false;
     }catch(error){
         console.error(error);
         return false;
+    }
+}
+
+export async function currentUserBlogs (){
+    try{
+        const user = await getUserFromCookies();
+        if(!user) return [];
+        const blogs = await db.blog.findMany({
+            where: {
+                user_id: user.id,
+            }
+        });
+        return blogs;
+    }catch(error){
+        console.error(error);
+        return [];
+    }
+}
+
+export async function logoutUser (){
+    try{
+        const user = await getUserFromCookies();
+
+    }catch(error){
+
     }
 }

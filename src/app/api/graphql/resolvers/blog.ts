@@ -1,3 +1,4 @@
+import { getUserFromCookies } from "@/helper";
 import db from "@/services/prisma";
 
 export async function getBlogById(x: any, args: { id: string }) {
@@ -40,7 +41,12 @@ export async function getBlogs() {
 }
 
 export async function createNewBlog(x: any, args: any) {
+    
+    const user = await getUserFromCookies();
+    if(!user) throw new Error("Authentication required");
+    
     const blogToSave = {
+        user_id: user.id,
         title: args.title,
         content: args.content,
         imageUrl: args.imageUrl

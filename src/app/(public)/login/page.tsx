@@ -13,7 +13,6 @@ mutation LoginUser($email: String!, $password: String!) {
   loginUser(email: $email, password: $password)
 }
 `
-
 export default function Page() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

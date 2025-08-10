@@ -5,6 +5,8 @@ export const typeDefs = gql`
     blog(id: String): Blog
     blogs: [Blog]
     searchBlogs(q: String) : [Blog]
+    currentUser: User
+    currentUserBlogs: [Blog]
   }
     type Blog {
         id: String,
@@ -18,5 +20,12 @@ export const typeDefs = gql`
           updateBlog(id: String!, title: String, content: String, imageUrl: String): Boolean!
           signupUser(name: String!, email: String!, password: String!): Boolean!
           loginUser(email: String!, password: String!): Boolean!
+          logoutUser: Boolean
+        }
+
+        type User {
+          id: String,
+          name: String,
+          email: String
         }
 `;
