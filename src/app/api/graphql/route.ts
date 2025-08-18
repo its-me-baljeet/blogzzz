@@ -1,8 +1,8 @@
 import { getUserFromCookies } from "@/helper";
 import db from "@/services/prisma";
+import { NextRequest, NextResponse } from "next/server";
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
-import { NextRequest } from "next/server";
 import { User } from "../../../../generated/prisma";
 import { createNewBlog, deleteBlogFromDB, getBlogById, getBlogs, getBlogUser, getSelectedUserBlogs, getSuggestions, searchBlogByQuery, updateBlog } from "./resolvers/blog";
 import { currentUserBlogs, loginUser, logoutUser, signupUser } from "./resolvers/user";
@@ -50,16 +50,28 @@ const server = new ApolloServer({
     resolvers,
 });
 
+
+
 const handler = startServerAndCreateNextHandler(server, {
-    context: async req => ({ req }),
+  context: async req => ({ req }),
 });
 
+export async function POST(req: NextRequest) {
+  const res = NextResponse.json({ data: "your response" });
 
-export async function GET(request: Request) {
-  return handler(request);
+  // Add CORS headers
+  res.headers.set("Access-Control-Allow-Origin", "*"); // allow all origins
+  res.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  return res;
 }
 
-export async function POST(request: Request) {
-  return handler(request);
+// Optional: handle OPTIONS preflight
+export async function OPTIONS() {
+  const res = NextResponse.json({});
+  res.headers.set("Access-Control-Allow-Origin", "*");
+  res.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  return res;
 }
-
