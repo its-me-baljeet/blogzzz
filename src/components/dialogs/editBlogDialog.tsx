@@ -19,6 +19,7 @@ import { gql } from "graphql-request"
 import { toast } from "sonner"
 import gqlClient from "@/services/graphql"
 import { Blog } from "../../../generated/prisma"
+import { useRouter } from "next/navigation"
 
 const UPDATE_BLOG = gql`
 mutation UpdateBlog($updateBlogId: String!, $title: String, $content: String, $imageUrl: String) {
@@ -29,9 +30,11 @@ mutation UpdateBlog($updateBlogId: String!, $title: String, $content: String, $i
 export default function EditDialog({ blog }: {
     blog: Blog
 }) {
+    const [open, setOpen] = useState(false);
     const [title, setTitle] = useState(blog.title);
     const [content, setContent] = useState(blog.content);
     const [imageUrl, setImageUrl] = useState(blog.imageUrl ?? "");
+    const router = useRouter();
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -49,12 +52,15 @@ export default function EditDialog({ blog }: {
         })
         if (res.updateBlog) {
             toast.success("Blog updated!");
+            setOpen(false);
+            router.refresh();
         } else {
             toast.error("Unable to update blog!");
+            return;
         }
     }
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline"><Edit3Icon /></Button>
             </DialogTrigger>

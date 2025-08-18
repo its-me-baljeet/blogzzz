@@ -1,5 +1,5 @@
 'use client'
-import BlogCard from "@/components/blogCard";
+import BlogCard, { BlogWithUser } from "@/components/blogCard";
 import { getUserFromCookies } from "@/helper";
 import gqlClient from "@/services/graphql";
 import { gql } from "graphql-request";
@@ -7,26 +7,33 @@ import { useContext, useEffect, useState } from "react";
 import { Blog } from "../../../../generated/prisma";
 import { UserContext } from "@/context/userContext";
 
-const CURRENT_USER_BLOGS = gql`
+export const CURRENT_USER_BLOGS = gql`
 query CurrentUserBlogs($currentUserBlogsId: String!) {
   currentUserBlogs(id: $currentUserBlogsId) {
+    id
     title
     imageUrl
     content
+    user_id
+    user{
+      name
+      email
+      id
+    }
   }
 }
 `
 
 export default function Page(){
 
-    const [userBlogs, setUserBlogs] = useState<Blog[]>([]);
+    const [userBlogs, setUserBlogs] = useState<BlogWithUser[]>([]);
     const context = useContext(UserContext);
     const user = context?.user;
     useEffect(()=>{
       async function getCurrentUserBlogs(){
         if(user){
                 const res:{
-                    currentUserBlogs : Blog[]
+                    currentUserBlogs : BlogWithUser[]
                 } = await gqlClient.request(CURRENT_USER_BLOGS,{
                     currentUserBlogsId : user.id
                 });

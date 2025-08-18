@@ -19,53 +19,58 @@ export async function signupUser(x: any, args: {
     }
 }
 
-export async function loginUser (x: any, args: {
-    email : string,
+export async function loginUser(x: any, args: {
+    email: string,
     password: string
-}){
-    const {email, password}= args;
+}) {
+    const { email, password } = args;
 
     const cookieStore = await cookies();
-    try{
+    try {
         const user = await db.user.findUnique({
             where: {
                 email
             }
         });
-        if(!user)return false;
+        if (!user) return false;
         const token = createToken(user.id);
-        if(user?.password==password){
+        if (user?.password == password) {
             cookieStore.set("token", token);
             return true;
         }
         return false;
-    }catch(error){
+    } catch (error) {
         console.error(error);
         return false;
     }
 }
 
-export async function currentUserBlogs (){
-    try{
+export async function currentUserBlogs(x: any, args: {
+    id: string
+}) {
+    try {
+        const id = args.id;
         const user = await getUserFromCookies();
-        if(!user) return [];
+        if (!user) return [];
         const blogs = await db.blog.findMany({
             where: {
-                user_id: user.id,
+                user_id: id,
             }
         });
         return blogs;
-    }catch(error){
+    } catch (error) {
         console.error(error);
         return [];
     }
 }
 
-export async function logoutUser (){
-    try{
-        const user = await getUserFromCookies();
-
-    }catch(error){
-
+export async function logoutUser() {
+    try {
+        const cookieStore = await cookies();
+        cookieStore.delete("token");
+        return true;
+    } catch (error) {
+        console.error("Logout Error:", error);
+        return false;
     }
 }

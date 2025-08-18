@@ -1,9 +1,11 @@
 import { getUserFromCookies } from "@/helper";
+import db from "@/services/prisma";
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { NextRequest } from "next/server";
-import { createNewBlog, deleteBlogFromDB, getBlogById, getBlogs, searchBlogByQuery, updateBlog } from "./resolvers/blog";
-import { currentUserBlogs, loginUser, signupUser } from "./resolvers/user";
+import { User } from "../../../../generated/prisma";
+import { createNewBlog, deleteBlogFromDB, getBlogById, getBlogs, getBlogUser, getSelectedUserBlogs, getSuggestions, searchBlogByQuery, updateBlog } from "./resolvers/blog";
+import { currentUserBlogs, loginUser, logoutUser, signupUser } from "./resolvers/user";
 import { typeDefs } from "./typedefs";
 
 const resolvers = {
@@ -12,7 +14,9 @@ const resolvers = {
     searchBlogs: searchBlogByQuery,
     blogs : getBlogs,
     currentUser: getUserFromCookies,
-    currentUserBlogs
+    currentUserBlogs,
+    getSelectedUserBlogs,
+    getSuggestions
   },
   Mutation : {
     createBlog : createNewBlog,
@@ -20,7 +24,24 @@ const resolvers = {
     updateBlog,
     signupUser,
     loginUser,
-    
+    logoutUser
+  },
+  Blog : {
+    user : getBlogUser
+  },
+  User: {
+    blogs : async (user: User)=>{
+      try{
+        const blogs = await db.blog.findMany({
+          where:{
+            user_id: user.id
+          }
+        });
+        return blogs;
+      }catch(error){
+        console.error(error);
+      }
+    }
   }
 };
 

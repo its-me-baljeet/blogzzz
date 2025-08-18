@@ -6,13 +6,17 @@ export const typeDefs = gql`
     blogs: [Blog]
     searchBlogs(q: String) : [Blog]
     currentUser: User
-    currentUserBlogs: [Blog]
+    currentUserBlogs(id: String): [Blog]
+    getSelectedUserBlogs(id: String!): [Blog]
+    getSuggestions(q: String): [Blog]
   }
     type Blog {
         id: String,
         title: String,
         content: String,
-        imageUrl: String
+        imageUrl: String,
+        user_id: String,
+        user: User
     }
         type Mutation {
           createBlog(title: String!, content: String!, imageUrl: String) : Blog!
@@ -26,6 +30,7 @@ export const typeDefs = gql`
         type User {
           id: String,
           name: String,
-          email: String
+          email: String,
+          blogs : [Blog]
         }
 `;

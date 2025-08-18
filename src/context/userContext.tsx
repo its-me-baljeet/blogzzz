@@ -10,7 +10,15 @@ export type UserType = {
     name: string,
     email: string
 }
-export const UserContext = createContext<{user: (UserType|null)}|null>(null);
+
+export type UserContextType = {
+    user: UserType|null,
+    setUser: ((x: UserType|null)=>void)|null
+}
+export const UserContext = createContext<UserContextType>({
+    user: null,
+    setUser: null
+});
 
 
 const CURR_USER = gql`
@@ -44,7 +52,7 @@ export default function CurrUserContext ({children}:{
     },[])
 
     return (
-        <UserContext.Provider value={{user}}>
+        <UserContext.Provider value={{user, setUser}}>
             {children}
         </UserContext.Provider>
     )

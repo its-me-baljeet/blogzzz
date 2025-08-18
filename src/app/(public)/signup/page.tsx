@@ -6,9 +6,10 @@ import gqlClient from "@/services/graphql";
 import { gql } from "graphql-request";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const SIGNUP_USER = gql`
-mutation UpdateBlog($name: String!, $email: String!, $password: String!) {
+mutation SignupUser($name: String!, $email: String!, $password: String!) {
   signupUser(name: $name, email: $email, password: $password)
 }
 `
@@ -34,7 +35,11 @@ export default function Page() {
                 password
             });
 
-            if (data.signupUser) toast.success("User Registered!");
+            if (data.signupUser) {
+
+                toast.success("User Registered!");
+                window.location.href = "/";
+            }
             else toast.error("Can't create user!");
         } catch (error) {
             console.error(error);
@@ -42,22 +47,54 @@ export default function Page() {
         }
     }
     return (
-        <main>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-5">
-                <h2>Register</h2>
-                <div className="grid gap-3">
+        <main className="flex justify-center items-center min-h-screen px-4">
+            <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-5 p-6 w-full max-w-md border rounded-xl shadow-md"
+            >
+                <h2 className="text-2xl font-semibold text-center">Register</h2>
+
+                <div className="grid gap-2">
                     <Label htmlFor="name">Name</Label>
-                    <Input id="name" name="name" value={name} onChange={e => setName(e.target.value)} placeholder="enter your name" />
+                    <Input
+                        id="name"
+                        name="name"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                        placeholder="enter your name"
+                    />
                 </div>
-                <div className="grid gap-3">
+
+                <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="enter email..." />
+                    <Input
+                        id="email"
+                        name="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        placeholder="enter email..."
+                    />
                 </div>
-                <div className="grid gap-3">
+
+                <div className="grid gap-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input type="password" id="password" name="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="enter password..." />
+                    <Input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        placeholder="enter password..."
+                    />
                 </div>
-                <Button type="submit" className="self-end">Register</Button>
+
+                <Button type="submit" className="w-full">Register</Button>
+                <p className="text-sm text-center text-muted-foreground">
+                    Already have an account?{" "}
+                    <Link href="/login" className="text-primary hover:underline">
+                        Log In
+                    </Link>
+                </p>
             </form>
         </main>
     )
