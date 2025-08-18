@@ -3,32 +3,50 @@
 import BlogCard, { BlogWithUser } from "@/components/blogCard";
 import { UserContext } from "@/context/userContext";
 import gqlClient from "@/services/graphql";
-import { useContext, useEffect, useState } from "react";
-import { CURRENT_USER_BLOGS } from "../my-blogs/page";
+import { CURRENT_USER_BLOGS } from "@/utils/contants";
 import Image from "next/image";
+import { useContext, useEffect, useState } from "react";
 
 export default function Page() {
   const { user } = useContext(UserContext);
   const [userBlogs, setUserBlogs] = useState<BlogWithUser[]>([]);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     async function getCurrentUserBlogs() {
       if (user) {
-        const res: { currentUserBlogs: BlogWithUser[] } =
-          await gqlClient.request(CURRENT_USER_BLOGS, {
-            currentUserBlogsId: user.id,
-          });
-        if (res.currentUserBlogs) setUserBlogs(res.currentUserBlogs);
+        setLoading(true);
+        try {
+          const res: { currentUserBlogs: BlogWithUser[] } = await gqlClient.request(
+            CURRENT_USER_BLOGS,
+            { currentUserBlogsId: user.id }
+          );
+          if (res.currentUserBlogs) setUserBlogs(res.currentUserBlogs);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
       }
     }
     getCurrentUserBlogs();
   }, [user]);
 
+  if (loading) {
+    return (
+      <main className="h-[calc(100vh-56px)] flex justify-center items-center">
+        <p>Loading...</p>
+      </main>
+    );
+  }
+
+
   return (
     <main className="max-w-6xl mx-auto p-6 space-y-10">
       <section className="flex items-center gap-6 p-6 rounded-2xl shadow-lg">
         <Image
-          src={ "/default_user.png"}
+          src={"/default_user.png"}
           alt={user?.name || "User Avatar"}
           width={100}
           height={100}

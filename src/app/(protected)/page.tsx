@@ -1,29 +1,29 @@
+'use client';
+import { useEffect, useState } from "react";
 import BlogCard, { BlogWithUser } from "@/components/blogCard";
 import gqlClient from "@/services/graphql";
-import { gql } from "graphql-request";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { GET_BLOGS } from "@/utils/contants";
 
-const GET_BLOGS = gql`
-  query Query {
-    blogs {
-      id
-      imageUrl
-      title
-      content
-      user_id
-      user {
-        name
-        email
-        id
+export default function Home() {
+  const [blogs, setBlogs] = useState<BlogWithUser[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchBlogs() {
+      try {
+        const res: { blogs: BlogWithUser[] } = await gqlClient.request(GET_BLOGS);
+        console.log(res)
+        setBlogs(res.blogs);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     }
-  }
-`;
+    fetchBlogs();
+  }, []);
 
-export default async function Home() {
-  const resp: { blogs: BlogWithUser[] } = await gqlClient.request(GET_BLOGS);
-  const blogs = resp.blogs;
+  if (loading) return <p className="p-5">Loading blogs...</p>;
 
   return (
     <main className="min-h-[calc(100vh-56px)] w-full px-4 sm:px-6 py-8">
@@ -35,23 +35,13 @@ export default async function Home() {
           </p>
         </div>
 
-        <Separator />
-
-        {blogs.length > 0 ? (
-          <section className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {blogs.map((blog) => (
-              <BlogCard key={blog.id} blog={blog} />
-            ))}
-          </section>
-        ) : (
-          <Card className="flex items-center justify-center h-64">
-            <CardContent className="text-center">
-              <p className="text-muted-foreground">
-                No blogs available yet. Check back later!
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        <section className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {blogs.length > 0 ? (
+            blogs.map((blog) => <BlogCard key={blog.id} blog={blog} />)
+          ) : (
+            <p>No blogs available yet.</p>
+          )}
+        </section>
       </div>
     </main>
   );

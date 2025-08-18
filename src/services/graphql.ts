@@ -1,5 +1,8 @@
 import { GraphQLClient } from "graphql-request";
 
-const gqlClient = new GraphQLClient("http://localhost:3000/api/graphql");
+const HOST = process.env.HOSTNAME || "localhost";
+const PORT = process.env.PORT || "3000";
+
+const gqlClient = new GraphQLClient(`http://${HOST}:${PORT}/api/graphql`);
 
 export default gqlClient;
